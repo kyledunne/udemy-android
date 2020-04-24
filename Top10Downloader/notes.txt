@@ -1,0 +1,4 @@
+Logcat regex:
+    string|otherString: | means "or"
+
+in Android 6 and above, app has to request permission from the android system each time (user only has to grant it once unless they specifically revoke it)
