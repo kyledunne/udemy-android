@@ -1,34 +1,74 @@
 package iheart.kdunne.top10downloader
 
+import android.content.Context
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.MalformedURLException
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import kotlinx.android.synthetic.main.activity_main.*
 import java.net.URL
+import kotlin.properties.Delegates
+
+class FeedEntry {
+    var name = ""
+    var artist = ""
+    var releaseDate = ""
+    var summary = ""
+    var imageURL = ""
+
+    override fun toString(): String {
+        return """
+            name = $name
+            artist = $artist
+            releaseDate = $releaseDate
+            imageURL = $imageURL
+        """.trimIndent()
+    }
+}
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    private val downloadData by lazy { DownloadData(this, xmlListView) }
 
-        Log.d(TAG, "onCreate called")
-        val downloadData = DownloadData()
-        downloadData.execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topfreeapplications/limit=10/xml")
-        Log.d(TAG, "onCreate: done")
-    }
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            setContentView(R.layout.activity_main)
 
-    companion object {
-        private class DownloadData : AsyncTask<String, Void, String>() {
+            Log.d(TAG, "onCreate called")
+            downloadData.execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topfreeapplications/limit=25/xml")
+            Log.d(TAG, "onCreate: done")
+        }
+
+        override fun onDestroy() {
+            super.onDestroy()
+            downloadData.cancel(true)
+        }
+
+        companion object {
+        private class DownloadData(context: Context, listView: ListView) : AsyncTask<String, Void, String>() {
             private val TAG = "DownloadData"
 
-            override fun onPostExecute(result: String?) {
+            var propContext: Context by Delegates.notNull()
+            var propListView: ListView by Delegates.notNull()
+
+            init {
+                propContext = context
+                propListView = listView
+            }
+
+            override fun onPostExecute(result: String) {
                 super.onPostExecute(result)
-                Log.d(TAG, "onPostExecute: parameter is $result")
+                val parseApplications = ParseApplications()
+                parseApplications.parse(result)
+                //Log.d(TAG, "onPostExecute: parameter is $result")
+
+//                val arrayAdapter = ArrayAdapter<FeedEntry>(propContext, R.layout.list_item, parseApplications.applications)
+//                propListView.adapter = arrayAdapter
+                val feedAdapter = FeedAdapter(propContext, R.layout.list_record, parseApplications.applications)
+                propListView.adapter = feedAdapter
             }
 
             override fun doInBackground(vararg url: String?): String {
