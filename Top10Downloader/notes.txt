@@ -5,3 +5,4 @@ in Android 6 and above, app has to request permission from the android system ea
 
 Android Profiler
 
+https://developer.android.com/training/efficient-downloads/redundant_redundant
