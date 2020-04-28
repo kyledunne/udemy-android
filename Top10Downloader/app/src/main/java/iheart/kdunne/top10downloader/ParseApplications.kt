@@ -30,7 +30,6 @@ class ParseApplications {
                 when (eventType) {
 
                     XmlPullParser.START_TAG -> {
-//                        Log.d(TAG, "parse: Starting tag for $tagName")
                         if (tagName == "entry") {
                             inEntry = true
                         }
@@ -39,13 +38,12 @@ class ParseApplications {
                     XmlPullParser.TEXT -> textValue = xpp.text
 
                     XmlPullParser.END_TAG -> {
-//                        Log.d(TAG, "parse: Ending tag for $tagName")
                         if (inEntry) {
                             when (tagName) {
                                 "entry" -> {
                                     applications.add(currentRecord)
                                     inEntry = false
-                                    currentRecord = FeedEntry()   // create a new object
+                                    currentRecord = FeedEntry()
                                 }
 
                                 "name" -> currentRecord.name = textValue
@@ -58,14 +56,8 @@ class ParseApplications {
                     }
                 }
 
-                // Nothing else to do.
                 eventType = xpp.next()
             }
-
-//            for (app in applications) {
-//                Log.d(TAG,"*******************")
-//                Log.d(TAG,app.toString())
-//            }
 
         } catch (e: Exception) {
             e.printStackTrace()

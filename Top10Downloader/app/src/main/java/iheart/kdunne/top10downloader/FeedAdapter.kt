@@ -8,9 +8,9 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 
 class ViewHolder(v: View) {
-    val tvName = v.findViewById<TextView>(R.id.tvName)
-    val tvArtist = v.findViewById<TextView>(R.id.tvArtist)
-    val tvSummary = v.findViewById<TextView>(R.id.tvSummary)
+    val tvName: TextView = v.findViewById(R.id.tvName)
+    val tvArtist: TextView = v.findViewById(R.id.tvArtist)
+    val tvSummary: TextView = v.findViewById(R.id.tvSummary)
 }
 
 class FeedAdapter(context: Context, private val resource: Int, private val applications: List<FeedEntry>): ArrayAdapter<FeedEntry>(context, resource) {
